@@ -1,4 +1,3 @@
-
 // API service module - Real data only
 
 // Alpha Vantage API Key
@@ -6,6 +5,16 @@ const ALPHA_VANTAGE_API_KEY = 'Q1J2GM7L9WMRDS9A';
 
 // News API Key
 const NEWS_API_KEY = '1cb3fb8e7cb64f9f8c7130008c22820c';
+
+// Mock data for fallbacks
+export const mockCurrencyData = {
+  'USD_EUR': { rate: 0.92 },
+  'EUR_USD': { rate: 1.09 },
+  'USD_GBP': { rate: 0.79 },
+  'GBP_USD': { rate: 1.27 },
+  'USD_JPY': { rate: 150.25 },
+  'JPY_USD': { rate: 0.0067 }
+};
 
 // Function to fetch real stock data
 export async function fetchStockData(symbol) {

@@ -1,496 +1,184 @@
 
-// Trends page functionality with real API data
-const ALPHA_VANTAGE_API_KEY = 'DYC4OFYLHXPSJ777';
-
-// Utility function to format currency
-function formatCurrency(value, currency = 'USD') {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(value);
-}
-
-// Show toast notifications
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  const toastMessage = document.getElementById('toast-message');
+// Simple trends page functionality
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Trends page loaded');
   
-  if (toast && toastMessage) {
-    toastMessage.textContent = message;
-    toast.className = `toast show ${type === 'error' ? 'error' : ''}`;
-    
-    setTimeout(() => {
-      toast.className = 'toast';
-    }, 3000);
-  }
-}
+  // Initialize the page
+  loadMarketTrends();
+  setupStockComparison();
+  setupCryptoChart();
+  setupStockSearch();
+});
 
-// Fetch stock data from Alpha Vantage
-async function fetchStockData(symbol) {
-  try {
-    const response = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${ALPHA_VANTAGE_API_KEY}`);
-    const data = await response.json();
-    
-    if (data['Global Quote']) {
-      const quote = data['Global Quote'];
-      return {
-        symbol: quote['01. symbol'],
-        price: parseFloat(quote['05. price']),
-        change: parseFloat(quote['09. change']),
-        changePercent: parseFloat(quote['10. change percent'].replace('%', '')),
-        volume: parseInt(quote['06. volume']),
-        latestTradingDay: quote['07. latest trading day']
-      };
-    } else {
-      throw new Error('Unable to fetch stock data');
-    }
-  } catch (error) {
-    console.error('Error fetching stock data:', error);
-    throw error;
-  }
-}
-
-// Fetch time series data for charts
-async function fetchStockTimeSeries(symbol, interval = 'daily') {
-  try {
-    const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${ALPHA_VANTAGE_API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (data['Time Series (Daily)']) {
-      const timeSeriesData = data['Time Series (Daily)'];
-      return Object.entries(timeSeriesData).map(([date, values]) => ({
-        date,
-        open: parseFloat(values['1. open']),
-        high: parseFloat(values['2. high']),
-        low: parseFloat(values['3. low']),
-        close: parseFloat(values['4. close']),
-        volume: parseInt(values['5. volume'])
-      })).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-30); // Last 30 days
-    } else {
-      throw new Error('Unable to fetch time series data');
-    }
-  } catch (error) {
-    console.error('Error fetching stock time series:', error);
-    throw error;
-  }
-}
-
-// Fetch crypto data
-async function fetchCryptoData(symbol, market = 'USD') {
-  try {
-    const response = await fetch(`https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=${market}&apikey=${ALPHA_VANTAGE_API_KEY}`);
-    const data = await response.json();
-    
-    if (data['Time Series (Digital Currency Daily)']) {
-      const timeSeries = data['Time Series (Digital Currency Daily)'];
-      return Object.entries(timeSeries).map(([date, values]) => ({
-        date,
-        open: parseFloat(values[`1a. open (${market})`]),
-        high: parseFloat(values[`2a. high (${market})`]),
-        low: parseFloat(values[`3a. low (${market})`]),
-        close: parseFloat(values[`4a. close (${market})`]),
-        volume: parseFloat(values['5. volume'])
-      })).sort((a, b) => new Date(a.date) - new Date(b.date)).slice(-30); // Last 30 days
-    } else {
-      throw new Error('Unable to fetch crypto data');
-    }
-  } catch (error) {
-    console.error('Error fetching crypto data:', error);
-    throw error;
-  }
-}
-
-// Initialize market trends
-async function initializeMarketTrends() {
-  const marketTrendsElement = document.getElementById('market-trends');
-  if (!marketTrendsElement) return;
+// Load market trends with simple mock data
+function loadMarketTrends() {
+  const marketTrendsContainer = document.getElementById('market-trends');
+  if (!marketTrendsContainer) return;
   
-  try {
-    marketTrendsElement.innerHTML = '<div class="col-span-full text-center text-gold-400">Loading market trends...</div>';
+  // Simple market data
+  const marketData = [
+    { name: 'S&P 500', symbol: 'SPY', price: 4185.50, change: 2.35, changePercent: 0.056 },
+    { name: 'Dow Jones', symbol: 'DIA', price: 34123.88, change: -45.67, changePercent: -0.134 },
+    { name: 'NASDAQ', symbol: 'QQQ', price: 14567.23, change: 12.45, changePercent: 0.085 }
+  ];
+  
+  let html = '';
+  marketData.forEach(item => {
+    const isPositive = item.change >= 0;
+    const changeColor = isPositive ? 'text-green-400' : 'text-red-400';
+    const changeIcon = isPositive ? '▲' : '▼';
     
-    const indices = ['SPY', 'QQQ', 'DIA']; // ETFs representing major indices
-    const promises = indices.map(symbol => fetchStockData(symbol));
-    const results = await Promise.all(promises);
-    
-    let trendsHTML = '';
-    results.forEach(stock => {
-      if (stock) {
-        const changeClass = stock.change >= 0 ? 'text-green-400' : 'text-red-500';
-        const changeIcon = stock.change >= 0 ? '↗' : '↘';
-        
-        trendsHTML += `
-          <div class="glass glass-hover rounded-lg p-6">
-            <h3 class="text-xl font-semibold text-gold-400 mb-2">${stock.symbol}</h3>
-            <div class="text-3xl font-bold mb-2">${formatCurrency(stock.price)}</div>
-            <div class="flex items-center ${changeClass}">
-              <span class="text-lg">${changeIcon}</span>
-              <span class="ml-2">${stock.change.toFixed(2)} (${stock.changePercent.toFixed(2)}%)</span>
-            </div>
-            <div class="text-sm text-gray-400 mt-2">${stock.latestTradingDay}</div>
-          </div>
-        `;
-      }
-    });
-    
-    marketTrendsElement.innerHTML = trendsHTML;
-  } catch (error) {
-    console.error('Error initializing market trends:', error);
-    marketTrendsElement.innerHTML = '<div class="col-span-full text-center text-red-500">Failed to load market trends</div>';
-  }
+    html += `
+      <div class="glass rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-gold-400 mb-2">${item.name}</h3>
+        <div class="text-2xl font-bold text-white mb-1">$${item.price.toFixed(2)}</div>
+        <div class="${changeColor}">
+          ${changeIcon} ${item.change.toFixed(2)} (${item.changePercent.toFixed(2)}%)
+        </div>
+      </div>
+    `;
+  });
+  
+  marketTrendsContainer.innerHTML = html;
 }
 
-// Stock comparison chart
-let stockComparisonChart = null;
-
-async function initializeStockComparison() {
-  const canvas = document.getElementById('stock-comparison-chart');
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  
-  // Initialize with AAPL data
-  await updateStockChart('AAPL');
-  
-  // Add event listeners to stock selector buttons
+// Setup stock comparison
+function setupStockComparison() {
   const stockSelectors = document.querySelectorAll('.stock-selector');
+  const chartCanvas = document.getElementById('stock-comparison-chart');
+  
+  if (!chartCanvas) return;
+  
+  // Simple chart placeholder
+  const ctx = chartCanvas.getContext('2d');
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(0, 0, chartCanvas.width, chartCanvas.height);
+  ctx.fillStyle = '#000000';
+  ctx.font = '20px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Stock Comparison Chart', chartCanvas.width/2, chartCanvas.height/2);
+  
+  // Add click handlers to stock selectors
   stockSelectors.forEach(button => {
-    button.addEventListener('click', async function() {
+    button.addEventListener('click', function() {
       // Remove active class from all buttons
-      stockSelectors.forEach(btn => {
-        btn.classList.remove('bg-gold-500', 'text-black');
-        btn.classList.add('bg-gold-500/20', 'text-gold-400');
-      });
-      
+      stockSelectors.forEach(btn => btn.classList.remove('bg-gold-500'));
       // Add active class to clicked button
-      this.classList.remove('bg-gold-500/20', 'text-gold-400');
-      this.classList.add('bg-gold-500', 'text-black');
+      this.classList.add('bg-gold-500');
       
-      const symbol = this.dataset.symbol;
-      await updateStockChart(symbol);
+      showToast(`Selected ${this.dataset.symbol} for comparison`);
     });
   });
 }
 
-async function updateStockChart(symbol) {
-  try {
-    const timeSeriesData = await fetchStockTimeSeries(symbol);
-    
-    const labels = timeSeriesData.map(item => item.date);
-    const prices = timeSeriesData.map(item => item.close);
-    
-    if (stockComparisonChart) {
-      stockComparisonChart.destroy();
-    }
-    
-    const canvas = document.getElementById('stock-comparison-chart');
-    const ctx = canvas.getContext('2d');
-    
-    stockComparisonChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: `${symbol} Closing Price`,
-          data: prices,
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245, 158, 11, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: `${symbol} - 30 Day Price Trend`,
-            color: '#f59e0b'
-          },
-          legend: {
-            labels: {
-              color: '#f59e0b'
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: '#9ca3af'
-            },
-            grid: {
-              color: 'rgba(156, 163, 175, 0.1)'
-            }
-          },
-          y: {
-            ticks: {
-              color: '#9ca3af',
-              callback: function(value) {
-                return '$' + value.toFixed(2);
-              }
-            },
-            grid: {
-              color: 'rgba(156, 163, 175, 0.1)'
-            }
-          }
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Error updating stock chart:', error);
-    showToast('Failed to load stock chart data', 'error');
-  }
-}
-
-// Crypto chart
-let cryptoChart = null;
-
-async function initializeCryptoChart() {
-  const canvas = document.getElementById('crypto-chart');
-  if (!canvas) return;
-  
-  await updateCryptoChart('BTC');
-  
-  // Add event listeners to time selector buttons
+// Setup crypto chart
+function setupCryptoChart() {
+  const chartCanvas = document.getElementById('crypto-chart');
   const timeSelectors = document.querySelectorAll('.time-selector');
+  
+  if (!chartCanvas) return;
+  
+  // Simple chart placeholder
+  const ctx = chartCanvas.getContext('2d');
+  ctx.fillStyle = '#f59e0b';
+  ctx.fillRect(0, 0, chartCanvas.width, chartCanvas.height);
+  ctx.fillStyle = '#000000';
+  ctx.font = '20px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Bitcoin Price Chart', chartCanvas.width/2, chartCanvas.height/2);
+  
+  // Add click handlers to time selectors
   timeSelectors.forEach(button => {
     button.addEventListener('click', function() {
       // Remove active class from all buttons
       timeSelectors.forEach(btn => {
-        btn.classList.remove('bg-gold-500', 'text-black');
-        btn.classList.add('bg-gold-500/20', 'text-gold-400');
+        btn.classList.remove('bg-gold-500/20');
+        btn.classList.add('border-gold-500/30');
       });
-      
       // Add active class to clicked button
-      this.classList.remove('bg-gold-500/20', 'text-gold-400');
-      this.classList.add('bg-gold-500', 'text-black');
+      this.classList.add('bg-gold-500/20');
       
-      // For now, we'll just refresh with the same data
-      // In a real implementation, you'd fetch different time periods
-      updateCryptoChart('BTC');
+      showToast(`Updated chart for ${this.dataset.period} period`);
     });
   });
 }
 
-async function updateCryptoChart(symbol) {
-  try {
-    const timeSeriesData = await fetchCryptoData(symbol);
-    
-    const labels = timeSeriesData.map(item => item.date);
-    const prices = timeSeriesData.map(item => item.close);
-    
-    if (cryptoChart) {
-      cryptoChart.destroy();
-    }
-    
-    const canvas = document.getElementById('crypto-chart');
-    const ctx = canvas.getContext('2d');
-    
-    cryptoChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: `${symbol} Price (USD)`,
-          data: prices,
-          borderColor: '#00ff88',
-          backgroundColor: 'rgba(0, 255, 136, 0.1)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          title: {
-            display: true,
-            text: `${symbol} - 30 Day Price Trend`,
-            color: '#00ff88'
-          },
-          legend: {
-            labels: {
-              color: '#00ff88'
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: '#9ca3af'
-            },
-            grid: {
-              color: 'rgba(156, 163, 175, 0.1)'
-            }
-          },
-          y: {
-            ticks: {
-              color: '#9ca3af',
-              callback: function(value) {
-                return '$' + value.toLocaleString();
-              }
-            },
-            grid: {
-              color: 'rgba(156, 163, 175, 0.1)'
-            }
-          }
-        }
-      }
-    });
-  } catch (error) {
-    console.error('Error updating crypto chart:', error);
-    showToast('Failed to load crypto chart data', 'error');
-  }
-}
-
-// Stock lookup functionality
-function initializeStockLookup() {
-  const form = document.getElementById('stock-search-form');
-  const input = document.getElementById('stock-search-input');
+// Setup stock search
+function setupStockSearch() {
+  const searchForm = document.getElementById('stock-search-form');
+  const searchInput = document.getElementById('stock-search-input');
   const resultsSection = document.getElementById('stock-lookup-section');
   const resultsContainer = document.getElementById('stock-results');
   
-  if (form && input) {
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      const symbol = input.value.trim().toUpperCase();
+  if (!searchForm) return;
+  
+  searchForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const symbol = searchInput.value.trim().toUpperCase();
+    if (!symbol) {
+      showToast('Please enter a stock symbol', 'error');
+      return;
+    }
+    
+    // Simple mock stock data
+    const mockData = {
+      'AAPL': { name: 'Apple Inc.', price: 175.43, change: 2.15, volume: '45.2M' },
+      'MSFT': { name: 'Microsoft Corporation', price: 378.85, change: -1.25, volume: '32.1M' },
+      'GOOGL': { name: 'Alphabet Inc.', price: 2847.73, change: 15.42, volume: '28.7M' },
+      'TSLA': { name: 'Tesla Inc.', price: 248.52, change: -8.75, volume: '89.3M' }
+    };
+    
+    const stockData = mockData[symbol];
+    
+    if (stockData) {
+      const isPositive = stockData.change >= 0;
+      const changeColor = isPositive ? 'text-green-400' : 'text-red-400';
+      const changeIcon = isPositive ? '▲' : '▼';
       
-      if (!symbol) {
-        showToast('Please enter a stock symbol', 'error');
-        return;
-      }
-      
-      try {
-        resultsContainer.innerHTML = '<div class="text-center text-gold-400">Loading stock data...</div>';
-        resultsSection.classList.remove('hidden');
-        
-        const stockData = await fetchStockData(symbol);
-        const timeSeriesData = await fetchStockTimeSeries(symbol);
-        
-        const changeClass = stockData.change >= 0 ? 'text-green-400' : 'text-red-500';
-        const changeIcon = stockData.change >= 0 ? '↗' : '↘';
-        
-        resultsContainer.innerHTML = `
-          <div class="glass rounded-lg p-6">
-            <div class="flex flex-col md:flex-row justify-between items-start mb-6">
-              <div>
-                <h3 class="text-3xl font-bold text-gold-400 mb-2">${stockData.symbol}</h3>
-                <div class="text-4xl font-bold mb-2">${formatCurrency(stockData.price)}</div>
-                <div class="flex items-center ${changeClass} text-lg">
-                  <span>${changeIcon}</span>
-                  <span class="ml-2">${stockData.change.toFixed(2)} (${stockData.changePercent.toFixed(2)}%)</span>
-                </div>
-              </div>
-              <div class="text-right mt-4 md:mt-0">
-                <div class="text-sm text-gray-400">Volume</div>
-                <div class="text-xl font-semibold">${stockData.volume.toLocaleString()}</div>
-                <div class="text-sm text-gray-400 mt-2">Last Trading Day</div>
-                <div class="text-lg">${stockData.latestTradingDay}</div>
-              </div>
+      resultsContainer.innerHTML = `
+        <div class="glass rounded-lg p-6">
+          <h3 class="text-2xl font-semibold text-gold-400 mb-2">${symbol}</h3>
+          <p class="text-gray-300 mb-4">${stockData.name}</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <p class="text-gray-400">Price</p>
+              <p class="text-2xl font-bold text-white">$${stockData.price}</p>
             </div>
-            
-            <div class="h-[300px]">
-              <canvas id="stock-lookup-chart"></canvas>
+            <div>
+              <p class="text-gray-400">Change</p>
+              <p class="text-lg font-semibold ${changeColor}">
+                ${changeIcon} $${Math.abs(stockData.change).toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <p class="text-gray-400">Volume</p>
+              <p class="text-lg text-white">${stockData.volume}</p>
             </div>
           </div>
-        `;
-        
-        // Create chart for the looked up stock
-        setTimeout(() => {
-          const canvas = document.getElementById('stock-lookup-chart');
-          if (canvas) {
-            const ctx = canvas.getContext('2d');
-            const labels = timeSeriesData.map(item => item.date);
-            const prices = timeSeriesData.map(item => item.close);
-            
-            new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: labels,
-                datasets: [{
-                  label: `${symbol} Closing Price`,
-                  data: prices,
-                  borderColor: '#f59e0b',
-                  backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                  borderWidth: 2,
-                  fill: true,
-                  tension: 0.1
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                  title: {
-                    display: true,
-                    text: `${symbol} - 30 Day Price History`,
-                    color: '#f59e0b'
-                  },
-                  legend: {
-                    labels: {
-                      color: '#f59e0b'
-                    }
-                  }
-                },
-                scales: {
-                  x: {
-                    ticks: {
-                      color: '#9ca3af'
-                    },
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)'
-                    }
-                  },
-                  y: {
-                    ticks: {
-                      color: '#9ca3af',
-                      callback: function(value) {
-                        return '$' + value.toFixed(2);
-                      }
-                    },
-                    grid: {
-                      color: 'rgba(156, 163, 175, 0.1)'
-                    }
-                  }
-                }
-              }
-            });
-          }
-        }, 100);
-        
-        showToast(`Stock data loaded for ${symbol}!`);
-        
-      } catch (error) {
-        console.error('Error fetching stock lookup data:', error);
-        resultsContainer.innerHTML = '<div class="text-center text-red-500">Failed to load stock data. Please check the symbol and try again.</div>';
-        showToast('Failed to load stock data', 'error');
-      }
-    });
-  }
+        </div>
+      `;
+      
+      resultsSection.classList.remove('hidden');
+      showToast(`Found data for ${symbol}`);
+    } else {
+      showToast(`No data found for ${symbol}`, 'error');
+    }
+  });
 }
 
-// Initialize everything when the page loads
-document.addEventListener('DOMContentLoaded', async function() {
-  // Load Chart.js if not already loaded
-  if (typeof Chart === 'undefined') {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-    script.onload = async function() {
-      await initializeMarketTrends();
-      await initializeStockComparison();
-      await initializeCryptoChart();
-      initializeStockLookup();
-    };
-    document.head.appendChild(script);
-  } else {
-    await initializeMarketTrends();
-    await initializeStockComparison();
-    await initializeCryptoChart();
-    initializeStockLookup();
-  }
-});
+// Simple toast notification function
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toast-message');
+  
+  if (!toast || !toastMessage) return;
+  
+  toastMessage.textContent = message;
+  toast.className = `toast ${type === 'error' ? 'error' : 'success'}`;
+  toast.style.display = 'block';
+  
+  setTimeout(() => {
+    toast.style.display = 'none';
+  }, 3000);
+}
