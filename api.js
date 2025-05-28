@@ -2,7 +2,7 @@
 // API service module - Real data only
 
 // Alpha Vantage API Key
-const ALPHA_VANTAGE_API_KEY = 'DYC4OFYLHXPSJ777';
+const ALPHA_VANTAGE_API_KEY = 'Q1J2GM7L9WMRDS9A';
 
 // News API Key
 const NEWS_API_KEY = '1cb3fb8e7cb64f9f8c7130008c22820c';
