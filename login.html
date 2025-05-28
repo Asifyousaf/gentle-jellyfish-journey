@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -116,14 +117,14 @@
             <a 
               href="#" 
               id="login-link"
-              class="flex-1 py-4 text-center text-gold-400 border-b-2 border-gold-400 font-medium"
+              class="flex-1 py-4 text-center text-gold-400 border-b-2 border-gold-400 font-medium transition-colors"
             >
               Login
             </a>
             <a 
               href="#" 
               id="register-link"
-              class="flex-1 py-4 text-center text-gray-300 font-medium"
+              class="flex-1 py-4 text-center text-gray-300 font-medium transition-colors hover:text-gold-300"
             >
               Register
             </a>
@@ -133,13 +134,14 @@
           <div id="login-form-container" class="p-6">
             <form id="login-form" class="space-y-6">
               <div>
-                <label for="login-email" class="block text-gold-400 font-medium mb-2">Email</label>
+                <label for="login-email" class="block text-gold-400 font-medium mb-2">Email Address</label>
                 <input 
                   type="email" 
                   id="login-email" 
-                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50"
-                  placeholder="Enter your email"
+                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
+                  placeholder="Enter your email address"
                   required
+                  autocomplete="email"
                 />
               </div>
               
@@ -151,9 +153,10 @@
                 <input 
                   type="password" 
                   id="login-password" 
-                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50"
+                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
                   placeholder="Enter your password"
                   required
+                  autocomplete="current-password"
                 />
               </div>
               
@@ -161,7 +164,7 @@
                 <button 
                   type="submit" 
                   id="login-submit"
-                  class="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold py-3 rounded-lg transition-all"
+                  class="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Login
                 </button>
@@ -182,20 +185,22 @@
                 <input 
                   type="text" 
                   id="register-name" 
-                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50"
+                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
                   placeholder="Enter your full name"
                   required
+                  autocomplete="name"
                 />
               </div>
               
               <div>
-                <label for="register-email" class="block text-gold-400 font-medium mb-2">Email</label>
+                <label for="register-email" class="block text-gold-400 font-medium mb-2">Email Address</label>
                 <input 
                   type="email" 
                   id="register-email" 
-                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50"
-                  placeholder="Enter your email"
+                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
+                  placeholder="Enter your email address"
                   required
+                  autocomplete="email"
                 />
               </div>
               
@@ -204,10 +209,11 @@
                 <input 
                   type="password" 
                   id="register-password" 
-                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50"
-                  placeholder="Create a password (min. 8 characters)"
+                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
+                  placeholder="Create a password (min. 6 characters)"
                   required
-                  minlength="8"
+                  minlength="6"
+                  autocomplete="new-password"
                 />
               </div>
               
@@ -216,10 +222,11 @@
                 <input 
                   type="password" 
                   id="register-confirm-password" 
-                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50"
+                  class="w-full bg-black/50 border border-gold-500/30 focus:border-gold-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold-500/50 transition-colors"
                   placeholder="Confirm your password"
                   required
-                  minlength="8"
+                  minlength="6"
+                  autocomplete="new-password"
                 />
               </div>
               
@@ -227,7 +234,7 @@
                 <button 
                   type="submit" 
                   id="register-submit"
-                  class="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold py-3 rounded-lg transition-all"
+                  class="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Create Account
                 </button>
