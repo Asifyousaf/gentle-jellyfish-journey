@@ -1,4 +1,3 @@
-
 // #i updated the import path to use the correct supabase client
 import { supabase } from './src/supabase.js';
 
@@ -67,6 +66,9 @@ async function initializeLoginForm() {
         }
 
         console.log('Login successful:', data); // #i log success for debugging
+        
+        // #i save session info for simple auth check
+        localStorage.setItem('supabase_session', JSON.stringify(data.session));
         
         // #i show success message and redirect to dashboard
         showToast('Login successful! Redirecting to dashboard...');

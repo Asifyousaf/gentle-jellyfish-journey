@@ -1,4 +1,20 @@
+
 // Main JavaScript for shared functionality across pages
+
+// Check if user is logged in (simple check)
+window.isUserLoggedIn = function() {
+  const session = localStorage.getItem('supabase_session');
+  return session && session !== 'null';
+};
+
+// Redirect to login if not authenticated
+window.requireAuth = function() {
+  if (!window.isUserLoggedIn()) {
+    window.location.href = 'login.html';
+    return false;
+  }
+  return true;
+};
 
 // Toast notification function (global)
 window.showToast = function(message, type = 'success') {
@@ -91,6 +107,24 @@ window.debounce = function(func, wait) {
 
 // Newsletter subscription functionality
 document.addEventListener('DOMContentLoaded', function() {
+  // Add click handlers to navigation links that require auth
+  const protectedLinks = document.querySelectorAll('a[href="dashboard.html"], a[href="currency.html"], a[href="news.html"], a[href="trends.html"], a[href="profile.html"]');
+  
+  protectedLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      if (!window.isUserLoggedIn()) {
+        window.showToast('Please login to access this page', 'error');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1500);
+      } else {
+        window.location.href = this.getAttribute('href');
+      }
+    });
+  });
+
   const form = document.getElementById('newsletter-form');
   if (form) {
     form.addEventListener('submit', async function(e) {
