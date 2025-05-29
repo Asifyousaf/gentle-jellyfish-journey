@@ -1,138 +1,134 @@
-// Main JavaScript for shared functionality across pages
 
-// Toast notification function (global)
+// Simple authentication check and utilities
+class AuthManager {
+  constructor() {
+    this.supabase = null;
+    this.user = null;
+    this.init();
+  }
+
+  async init() {
+    try {
+      const { supabase } = await import('./src/supabase.js');
+      this.supabase = supabase;
+      await this.checkAuth();
+      this.setupAuthListener();
+    } catch (error) {
+      console.error('Auth init failed:', error);
+    }
+  }
+
+  async checkAuth() {
+    if (!this.supabase) return false;
+    
+    try {
+      const { data: { session } } = await this.supabase.auth.getSession();
+      this.user = session?.user || null;
+      this.updateNavigation();
+      return !!this.user;
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      return false;
+    }
+  }
+
+  setupAuthListener() {
+    if (!this.supabase) return;
+    
+    this.supabase.auth.onAuthStateChange((event, session) => {
+      this.user = session?.user || null;
+      this.updateNavigation();
+    });
+  }
+
+  updateNavigation() {
+    const loginBtn = document.getElementById('login-btn');
+    const profileLink = document.getElementById('profile-link');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (this.user) {
+      if (loginBtn) loginBtn.style.display = 'none';
+      if (profileLink) profileLink.style.display = 'block';
+      if (logoutBtn) logoutBtn.style.display = 'block';
+    } else {
+      if (loginBtn) loginBtn.style.display = 'block';
+      if (profileLink) profileLink.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+    }
+  }
+
+  async logout() {
+    if (!this.supabase) return;
+    
+    try {
+      await this.supabase.auth.signOut();
+      window.location.href = 'index.html';
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  }
+
+  requireAuth() {
+    if (!this.user) {
+      this.showLoginPrompt();
+      return false;
+    }
+    return true;
+  }
+
+  showLoginPrompt() {
+    const prompt = document.createElement('div');
+    prompt.className = 'login-prompt';
+    prompt.innerHTML = `
+      <div class="login-card">
+        <h2 style="color: var(--gold); margin-bottom: 1rem;">Login Required</h2>
+        <p style="color: var(--text-gray); margin-bottom: 2rem;">Please sign in to access this page</p>
+        <div class="flex-center space-y">
+          <a href="login.html" class="btn btn-primary">Sign In</a>
+          <button onclick="this.parentElement.parentElement.parentElement.remove()" class="btn btn-outline">Cancel</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(prompt);
+  }
+}
+
+// Global auth manager
+window.authManager = new AuthManager();
+
+// Simple toast function
 window.showToast = function(message, type = 'success') {
-  const toast = document.getElementById('toast');
-  const toastMessage = document.getElementById('toast-message');
-  
-  if (!toast || !toastMessage) return;
+  const toast = document.getElementById('toast') || createToast();
+  const toastMessage = toast.querySelector('.toast-message') || toast;
   
   toastMessage.textContent = message;
   toast.classList.add('show');
   
   if (type === 'error') {
-    toast.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+    toast.style.borderColor = '#ef4444';
     toast.style.color = '#ef4444';
   } else {
     toast.style.borderColor = 'rgba(245, 158, 11, 0.3)';
     toast.style.color = '#f59e0b';
   }
   
-  setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3000);
+  setTimeout(() => toast.classList.remove('show'), 3000);
 };
 
-// Format currency
-window.formatCurrency = function(number, currency = 'USD') {
-  return new Intl.NumberFormat('en-US', { 
-    style: 'currency', 
-    currency: currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(number);
-};
+function createToast() {
+  const toast = document.createElement('div');
+  toast.id = 'toast';
+  toast.className = 'toast';
+  toast.innerHTML = '<span class="toast-message"></span>';
+  document.body.appendChild(toast);
+  return toast;
+}
 
-// Format percentage
-window.formatPercentage = function(number) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'percent',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(number / 100);
-};
-
-// Format date
-window.formatDate = function(dateString) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }).format(date);
-};
-
-// Format time
-window.formatTime = function(dateString) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
-  }).format(date);
-};
-
-// Format date and time
-window.formatDateTime = function(dateString) {
-  const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  }).format(date);
-};
-
-// Debounce function for search inputs
-window.debounce = function(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-};
-
-// Newsletter subscription functionality
+// Setup navigation on page load
 document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('newsletter-form');
-  if (form) {
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const emailInput = document.getElementById('email');
-      const submitBtn = document.getElementById('subscribe-btn');
-      const email = emailInput.value;
-      
-      if (!email) return;
-      
-      // Show loading state
-      submitBtn.textContent = 'Subscribing...';
-      submitBtn.disabled = true;
-      
-      try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Show success toast
-        window.showToast('Successfully subscribed! You\'ll receive the latest financial updates in your inbox.');
-        emailInput.value = '';
-      } catch (error) {
-        // Show error toast
-        window.showToast('Subscription failed. Please try again later.', 'error');
-      } finally {
-        submitBtn.textContent = 'Subscribe to Newsletter';
-        submitBtn.disabled = false;
-      }
-    });
+  // Setup logout button
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => window.authManager.logout());
   }
-
-  // Smooth scrolling for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      if (target) {
-        target.scrollIntoView({
-          behavior: 'smooth'
-        });
-      }
-    });
-  });
 });
