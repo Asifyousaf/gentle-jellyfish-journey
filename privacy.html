@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,22 +8,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-background text-foreground">
+<body>
   <!-- Navigation -->
-  <nav class="fixed top-0 left-0 right-0 z-50 glass">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center h-16">
-        <div class="flex items-center space-x-2">
-          <a href="index.html" class="flex items-center space-x-2">
-            <div class="w-8 h-8 bg-gradient-to-r from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <nav class="main-nav glass-card">
+    <div class="nav-container">
+      <div class="nav-content">
+        <div class="logo-container">
+          <a href="index.html" class="logo-container" style="text-decoration: none;">
+            <div class="logo-icon">
+              <svg style="width: 1.25rem; height: 1.25rem; color: black;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
               </svg>
             </div>
-            <span class="text-xl font-bold gradient-text">FinScope</span>
+            <span class="logo-text gradient-text">FinScope</span>
           </a>
         </div>
       </div>
@@ -30,105 +30,107 @@
   </nav>
 
   <!-- Main Content -->
-  <main class="pt-24 pb-12">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-bold gradient-text mb-8">Privacy Policy</h1>
+  <main class="main-content">
+    <div class="container-sm">
+      <h1 class="page-title gradient-text" style="margin-bottom: 2rem;">Privacy Policy</h1>
       
-      <div class="glass rounded-lg p-8 space-y-6">
-        <section>
-          <h2 class="text-2xl font-semibold text-gold-400 mb-4">Introduction</h2>
-          <p class="text-gray-300">This Privacy Policy explains how FinScope collects, uses, and protects your personal information when you use our services.</p>
-        </section>
+      <div class="glass-card" style="border-radius: 0.5rem; padding: 2rem;">
+        <div style="color: #d1d5db; line-height: 1.6;">
+          <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1rem;">Introduction</h2>
+            <p>This Privacy Policy explains how FinScope collects, uses, and protects your personal information when you use our services.</p>
+          </section>
 
-        <section>
-          <h2 class="text-2xl font-semibold text-gold-400 mb-4">Information We Collect</h2>
-          <ul class="list-disc list-inside text-gray-300 space-y-2">
-            <li>Account information (email, name)</li>
-            <li>Usage data and preferences</li>
-            <li>Device and browser information</li>
-            <li>Cookies and similar technologies</li>
-          </ul>
-        </section>
+          <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1rem;">Information We Collect</h2>
+            <ul style="list-style: disc; margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Account information (email, name)</li>
+              <li style="margin-bottom: 0.5rem;">Usage data and preferences</li>
+              <li style="margin-bottom: 0.5rem;">Device and browser information</li>
+              <li style="margin-bottom: 0.5rem;">Cookies and similar technologies</li>
+            </ul>
+          </section>
 
-        <section>
-          <h2 class="text-2xl font-semibold text-gold-400 mb-4">How We Use Your Information</h2>
-          <ul class="list-disc list-inside text-gray-300 space-y-2">
-            <li>Provide and improve our services</li>
-            <li>Personalize your experience</li>
-            <li>Send important updates and notifications</li>
-            <li>Analyze usage patterns and trends</li>
-          </ul>
-        </section>
+          <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1rem;">How We Use Your Information</h2>
+            <ul style="list-style: disc; margin-left: 1.5rem;">
+              <li style="margin-bottom: 0.5rem;">Provide and improve our services</li>
+              <li style="margin-bottom: 0.5rem;">Personalize your experience</li>
+              <li style="margin-bottom: 0.5rem;">Send important updates and notifications</li>
+              <li style="margin-bottom: 0.5rem;">Analyze usage patterns and trends</li>
+            </ul>
+          </section>
 
-        <section>
-          <h2 class="text-2xl font-semibold text-gold-400 mb-4">Data Security</h2>
-          <p class="text-gray-300">We implement industry-standard security measures to protect your personal information from unauthorized access, disclosure, or misuse.</p>
-        </section>
+          <section style="margin-bottom: 2rem;">
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1rem;">Data Security</h2>
+            <p>We implement industry-standard security measures to protect your personal information from unauthorized access, disclosure, or misuse.</p>
+          </section>
 
-        <section>
-          <h2 class="text-2xl font-semibold text-gold-400 mb-4">Contact Us</h2>
-          <p class="text-gray-300">If you have any questions about our Privacy Policy, please contact us at privacy@finscope.com</p>
-        </section>
+          <section>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1rem;">Contact Us</h2>
+            <p>If you have any questions about our Privacy Policy, please contact us at privacy@finscope.com</p>
+          </section>
+        </div>
       </div>
     </div>
   </main>
 
   <!-- Footer -->
-<footer class="py-12 border-t border-gold-500/10 bg-black/20">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-      <div>
-        <div class="flex items-center space-x-2 mb-4">
-          <div class="w-6 h-6 bg-gradient-to-r from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
-            <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-            </svg>
+  <footer class="footer-main">
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <div class="logo-container" style="margin-bottom: 1rem;">
+            <div style="width: 1.5rem; height: 1.5rem; background: linear-gradient(to right, #fbbf24, #d97706); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+              <svg style="width: 1rem; height: 1rem; color: black;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <span style="font-size: 1.125rem; font-weight: 700;" class="gradient-text">FinScope</span>
           </div>
-          <span class="text-lg font-bold gradient-text">FinScope</span>
+          <p style="color: #9ca3af; font-size: 0.875rem;">Real-time financial data and market insights at your fingertips.</p>
         </div>
-        <p class="text-gray-400 text-sm">Real-time financial data and market insights at your fingertips.</p>
+        
+        <div>
+          <h3>Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="currency.html">Currency Exchange</a></li>
+            <li><a href="news.html">Market News</a></li>
+            <li><a href="trends.html">Market Trends</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3>Resources</h3>
+          <ul class="footer-links">
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3>Connect With Us</h3>
+          <ul class="footer-links">
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Instagram</a></li>
+          </ul>
+        </div>
       </div>
       
-      <div>
-        <h3 class="text-gold-400 font-semibold mb-4">Quick Links</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="dashboard.html" class="text-gray-400 hover:text-gold-400 transition-colors">Dashboard</a></li>
-          <li><a href="currency.html" class="text-gray-400 hover:text-gold-400 transition-colors">Currency Exchange</a></li>
-          <li><a href="news.html" class="text-gray-400 hover:text-gold-400 transition-colors">Market News</a></li>
-          <li><a href="trends.html" class="text-gray-400 hover:text-gold-400 transition-colors">Market Trends</a></li>
-        </ul>
-      </div>
-      
-      <div>
-        <h3 class="text-gold-400 font-semibold mb-4">Resources</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="about.html" class="text-gray-400 hover:text-gold-400 transition-colors">About Us</a></li>
-          <li><a href="contact.html" class="text-gray-400 hover:text-gold-400 transition-colors">Contact</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-gold-400 transition-colors">Privacy Policy</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-gold-400 transition-colors">Terms of Service</a></li>
-        </ul>
-      </div>
-      
-      <div>
-        <h3 class="text-gold-400 font-semibold mb-4">Connect With Us</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="text-gray-400 hover:text-gold-400 transition-colors">Twitter</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-gold-400 transition-colors">LinkedIn</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-gold-400 transition-colors">Facebook</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-gold-400 transition-colors">Instagram</a></li>
-        </ul>
+      <div class="footer-bottom">
+        <p>&copy; 2024 FinScope. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </div>
       </div>
     </div>
-    
-    <div class="pt-8 border-t border-gold-500/10 flex flex-col md:flex-row justify-between items-center">
-      <p class="text-gray-400 text-sm">&copy; 2024 FinScope. All rights reserved.</p>
-      <div class="flex items-center space-x-4 mt-4 md:mt-0">
-        <a href="#" class="text-gray-400 hover:text-gold-400 text-sm transition-colors">Privacy</a>
-        <a href="#" class="text-gray-400 hover:text-gold-400 text-sm transition-colors">Terms</a>
-        <a href="#" class="text-gray-400 hover:text-gold-400 text-sm transition-colors">Cookies</a>
-      </div>
-    </div>
-  </div>
-</footer>
+  </footer>
 </body>
 </html>

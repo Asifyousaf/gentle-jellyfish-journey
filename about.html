@@ -9,129 +9,67 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              background: 'hsl(0 0% 8%)',
-              foreground: 'hsl(45 100% 85%)',
-              card: 'hsl(0 0% 12%)',
-              'card-foreground': 'hsl(45 100% 85%)',
-              primary: 'hsl(45 93% 47%)',
-              'primary-foreground': 'hsl(0 0% 8%)',
-              secondary: 'hsl(0 0% 16%)',
-              'secondary-foreground': 'hsl(45 100% 85%)',
-              muted: 'hsl(0 0% 16%)',
-              'muted-foreground': 'hsl(45 20% 65%)',
-              accent: 'hsl(0 0% 16%)',
-              'accent-foreground': 'hsl(45 100% 85%)',
-              border: 'hsl(0 0% 20%)',
-              input: 'hsl(0 0% 16%)',
-              ring: 'hsl(45 93% 47%)',
-              gold: {
-                50: '#fffbeb',
-                100: '#fef3c7',
-                200: '#fde68a',
-                300: '#fcd34d',
-                400: '#fbbf24',
-                500: '#f59e0b',
-                600: '#d97706',
-                700: '#b45309',
-                800: '#92400e',
-                900: '#78350f',
-              }
-            },
-            keyframes: {
-              'glow': {
-                '0%, 100%': {
-                  boxShadow: '0 0 20px rgba(245, 158, 11, 0.5)'
-                },
-                '50%': {
-                  boxShadow: '0 0 40px rgba(245, 158, 11, 0.8)'
-                }
-              },
-              'float': {
-                '0%, 100%': {
-                  transform: 'translateY(0px)'
-                },
-                '50%': {
-                  transform: 'translateY(-10px)'
-                }
-              }
-            },
-            animation: {
-              'glow': 'glow 2s ease-in-out infinite',
-              'float': 'float 3s ease-in-out infinite'
-            }
-          }
-        }
-      }
-    </script>
     <link rel="stylesheet" href="style.css">
   </head>
 
-  <body class="bg-background text-foreground">
+  <body>
     <!-- Navigation -->
-    <nav class="fixed top-0 left-0 right-0 z-50 glass">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 bg-gradient-to-r from-gold-400 to-gold-600 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <nav class="main-nav glass-card">
+      <div class="nav-container">
+        <div class="nav-content">
+          <div class="logo-container">
+            <div class="logo-icon">
+              <svg style="width: 1.25rem; height: 1.25rem; color: black;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
               </svg>
             </div>
-            <span class="text-xl font-bold gradient-text">FinScope</span>
+            <span class="logo-text gradient-text">FinScope</span>
           </div>
           
-          <div class="hidden md:block">
-            <div class="flex items-center space-x-8">
-              <a href="index.html" class="text-gray-300 hover:text-gold-400 transition-colors">Home</a>
-              <a href="dashboard.html" class="text-gray-300 hover:text-gold-400 transition-colors">Dashboard</a>
-              <a href="currency.html" class="text-gray-300 hover:text-gold-400 transition-colors">Currency</a>
-              <a href="news.html" class="text-gray-300 hover:text-gold-400 transition-colors">News</a>
-              <a href="trends.html" class="text-gray-300 hover:text-gold-400 transition-colors">Trends</a>
-              <a href="about.html" class="text-gold-400 border-b-2 border-gold-400 transition-colors">About</a>
-              <a href="contact.html" class="text-gray-300 hover:text-gold-400 transition-colors">Contact</a>
+          <div class="nav-links">
+            <div class="nav-menu">
+              <a href="index.html" class="nav-link">Home</a>
+              <a href="dashboard.html" class="nav-link">Dashboard</a>
+              <a href="currency.html" class="nav-link">Currency</a>
+              <a href="news.html" class="nav-link">News</a>
+              <a href="trends.html" class="nav-link">Trends</a>
+              <a href="about.html" class="nav-link active">About</a>
+              <a href="contact.html" class="nav-link">Contact</a>
             </div>
           </div>
           
-          <div class="flex items-center space-x-4">
-            <a href="login.html" class="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold px-4 py-2 rounded-lg transition-all">
-              Login
-            </a>
+          <div class="nav-actions">
+            <a href="login.html" class="btn-primary">Login</a>
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-24 pb-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main class="main-content">
+      <div class="container">
         <!-- Page Header -->
-        <div class="text-center mb-12">
-          <h1 class="text-4xl font-bold gradient-text mb-4">About FinScope</h1>
-          <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+        <div class="page-header">
+          <h1 class="page-title gradient-text">About FinScope</h1>
+          <p class="page-subtitle">
             A powerful financial platform built with modern technologies to provide real-time market insights
           </p>
         </div>
 
         <!-- Developer Section -->
-        <section class="mb-16">
-          <div class="glass rounded-lg p-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section style="margin-bottom: 4rem;">
+          <div class="glass-card" style="padding: 2rem; border-radius: 0.5rem;">
+            <div class="grid-2">
               <div>
-                <h2 class="text-2xl font-semibold text-gold-400 mb-6">Meet the Developer</h2>
-                <p class="text-gray-300 leading-relaxed mb-4">
+                <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1.5rem;">Meet the Developer</h2>
+                <p style="color: #d1d5db; line-height: 1.6; margin-bottom: 1rem;">
                   Hi, I'm Asif Yousaf, a passionate full-stack developer with expertise in building modern web applications. FinScope represents my vision of making financial data accessible and actionable for everyone.
                 </p>
-                <p class="text-gray-300 leading-relaxed">
+                <p style="color: #d1d5db; line-height: 1.6;">
                   With a focus on user experience and performance, I've developed FinScope using cutting-edge technologies and real-time APIs to deliver accurate financial insights.
                 </p>
               </div>
-              <div class="relative overflow-hidden rounded-lg">
+              <div style="position: relative; overflow: hidden; border-radius: 0.5rem;">
                 
               </div>
             </div>
@@ -139,12 +77,12 @@
         </section>
 
         <!-- Technology Stack -->
-        <section class="mb-16">
-          <h2 class="text-2xl font-semibold text-gold-400 mb-6">Our Technology Stack</h2>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">Frontend</h3>
-              <ul class="space-y-2 text-gray-300">
+        <section style="margin-bottom: 4rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1.5rem;">Our Technology Stack</h2>
+          <div class="grid-3">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">Frontend</h3>
+              <ul style="color: #d1d5db; line-height: 1.6;">
                 <li>• HTML5 & CSS3</li>
                 <li>• JavaScript (ES6+)</li>
                 <li>• TailwindCSS</li>
@@ -152,9 +90,9 @@
               </ul>
             </div>
             
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">Backend</h3>
-              <ul class="space-y-2 text-gray-300">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">Backend</h3>
+              <ul style="color: #d1d5db; line-height: 1.6;">
                 <li>• Node.js</li>
                 <li>• Supabase for authentication</li>
                 <li>• RESTful APIs</li>
@@ -162,9 +100,9 @@
               </ul>
             </div>
             
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">APIs</h3>
-              <ul class="space-y-2 text-gray-300">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">APIs</h3>
+              <ul style="color: #d1d5db; line-height: 1.6;">
                 <li>• Alpha Vantage API</li>
                 <li>• News API</li>
                 <li>• Currency Exchange API</li>
@@ -175,33 +113,33 @@
         </section>
 
         <!-- Features -->
-        <section class="mb-16">
-          <h2 class="text-2xl font-semibold text-gold-400 mb-6">Key Features</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">Real-Time Data</h3>
-              <p class="text-gray-300">
+        <section style="margin-bottom: 4rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 600; color: #fbbf24; margin-bottom: 1.5rem;">Key Features</h2>
+          <div class="grid-2">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">Real-Time Data</h3>
+              <p style="color: #d1d5db;">
                 Get instant access to market prices, currency exchange rates, and financial news through our integrated API system.
               </p>
             </div>
             
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">Interactive Charts</h3>
-              <p class="text-gray-300">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">Interactive Charts</h3>
+              <p style="color: #d1d5db;">
                 Visualize market trends and analyze data with our interactive charting system powered by Chart.js.
               </p>
             </div>
             
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">Secure Authentication</h3>
-              <p class="text-gray-300">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">Secure Authentication</h3>
+              <p style="color: #d1d5db;">
                 Protect your data with our robust authentication system implemented using Supabase.
               </p>
             </div>
             
-            <div class="glass glass-hover rounded-lg p-6">
-              <h3 class="text-xl font-semibold text-gold-400 mb-3">Responsive Design</h3>
-              <p class="text-gray-300">
+            <div class="glass-card glass-hover" style="padding: 1.5rem; border-radius: 0.5rem;">
+              <h3 style="font-size: 1.25rem; font-weight: 600; color: #fbbf24; margin-bottom: 0.75rem;">Responsive Design</h3>
+              <p style="color: #d1d5db;">
                 Access FinScope on any device with our mobile-first, responsive design approach.
               </p>
             </div>
@@ -210,17 +148,17 @@
 
         <!-- CTA -->
         <section>
-          <div class="glass glass-hover rounded-lg">
-            <div class="p-12 text-center">
-              <h2 class="text-3xl font-bold gradient-text mb-4">Start Using FinScope Today</h2>
-              <p class="text-xl text-gray-300 mb-8">
+          <div class="glass-card glass-hover" style="border-radius: 0.5rem;">
+            <div style="padding: 3rem; text-align: center;">
+              <h2 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem;" class="gradient-text">Start Using FinScope Today</h2>
+              <p style="font-size: 1.25rem; color: #d1d5db; margin-bottom: 2rem;">
                 Join thousands of users who trust FinScope for their financial insights
               </p>
-              <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="login.html" class="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold text-lg px-8 py-4 rounded-lg transition-all">
+              <div style="display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                <a href="login.html" class="btn-primary" style="font-size: 1.125rem; padding: 1rem 2rem; text-align: center; text-decoration: none;">
                   Get Started
                 </a>
-                <a href="contact.html" class="border border-gold-500/50 text-gold-400 hover:bg-gold-500/10 text-lg px-8 py-4 rounded-lg transition-all">
+                <a href="contact.html" class="btn-secondary" style="font-size: 1.125rem; padding: 1rem 2rem; text-align: center; text-decoration: none;">
                   Contact Us
                 </a>
               </div>
@@ -231,7 +169,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-gold-500/10 bg-black/20">
+    <footer class="footer-main">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
