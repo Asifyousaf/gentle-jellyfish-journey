@@ -144,6 +144,44 @@
   .toast.show {
     transform: translateX(0);
   }
+
+  /* Profile dropdown styles */
+  .profile-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.95);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    padding: 0;
+    min-width: 250px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .profile-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .profile-dropdown-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+    transition: background-color 0.2s ease;
+  }
+
+  .profile-dropdown-item:hover {
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  .profile-dropdown-item:last-child {
+    border-bottom: none;
+  }
 </style>
 </head>
 <body class="bg-background text-foreground">
@@ -173,15 +211,52 @@
       </div>
       
       <div class="flex items-center space-x-4">
-        <a href="profile.html" id="profile-link" class="text-gray-300 hover:text-gold-400 transition-colors hidden">
-          Profile
-        </a>
+        <!-- Login Link (shown when not logged in) -->
         <a href="login.html" id="login-link" class="bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-semibold px-4 py-2 rounded-lg transition-all">
           Login
         </a>
-        <button id="logout-btn" class="text-gray-300 hover:text-gold-400 transition-colors hidden">
-          Logout
-        </button>
+        
+        <!-- Profile Dropdown (shown when logged in) -->
+        <div id="profile-container" class="relative hidden">
+          <button id="profile-btn" class="flex items-center space-x-2 text-gray-300 hover:text-gold-400 transition-colors">
+            <div class="w-8 h-8 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+            </div>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <div id="profile-dropdown" class="profile-dropdown">
+            <div class="profile-dropdown-item">
+              <div class="text-sm text-gray-400">Name</div>
+              <div id="user-name" class="text-white font-medium">-</div>
+            </div>
+            <div class="profile-dropdown-item">
+              <div class="text-sm text-gray-400">Email</div>
+              <div id="user-email" class="text-white font-medium">-</div>
+            </div>
+            <div class="profile-dropdown-item">
+              <a href="profile.html" class="flex items-center space-x-2 text-gold-400 hover:text-gold-300 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span>Profile Settings</span>
+              </a>
+            </div>
+            <div class="profile-dropdown-item">
+              <button id="dropdown-logout-btn" class="flex items-center space-x-2 text-red-400 hover:text-red-300 transition-colors w-full text-left">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -444,6 +519,8 @@
 </div>
 
 <script>
+  let currentUser = null;
+
   // Check authentication status and update nav
   document.addEventListener('DOMContentLoaded', async function() {
     // Import supabase
@@ -452,31 +529,99 @@
     try {
       const { data: { session } } = await supabase.auth.getSession();
       
-      const loginLink = document.getElementById('login-link');
-      const profileLink = document.getElementById('profile-link');
-      const logoutBtn = document.getElementById('logout-btn');
+      updateAuthUI(session);
       
-      if (session) {
-        // User is logged in
-        loginLink.classList.add('hidden');
-        profileLink.classList.remove('hidden');
-        logoutBtn.classList.remove('hidden');
-        
-        // Handle logout
-        logoutBtn.addEventListener('click', async () => {
-          await supabase.auth.signOut();
-          window.location.reload();
-        });
-      } else {
-        // User is not logged in
-        loginLink.classList.remove('hidden');
-        profileLink.classList.add('hidden');
-        logoutBtn.classList.add('hidden');
-      }
+      // Listen for auth changes
+      supabase.auth.onAuthStateChange((event, session) => {
+        updateAuthUI(session);
+      });
+      
+      // Setup profile dropdown functionality
+      setupProfileDropdown();
+      
     } catch (error) {
       console.error('Error checking auth status:', error);
     }
   });
+
+  function updateAuthUI(session) {
+    const loginLink = document.getElementById('login-link');
+    const profileContainer = document.getElementById('profile-container');
+    
+    if (session && session.user) {
+      currentUser = session.user;
+      
+      // Hide login link, show profile dropdown
+      loginLink.classList.add('hidden');
+      profileContainer.classList.remove('hidden');
+      
+      // Update profile information
+      updateProfileInfo(session.user);
+      
+    } else {
+      currentUser = null;
+      
+      // Show login link, hide profile dropdown
+      loginLink.classList.remove('hidden');
+      profileContainer.classList.add('hidden');
+    }
+  }
+
+  async function updateProfileInfo(user) {
+    // Set email
+    document.getElementById('user-email').textContent = user.email || '-';
+    
+    // Try to get full name from profile
+    try {
+      const { supabase } = await import('./src/supabase.js');
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+      
+      document.getElementById('user-name').textContent = profile?.full_name || user.email?.split('@')[0] || 'User';
+    } catch (error) {
+      // Fallback to email username
+      document.getElementById('user-name').textContent = user.email?.split('@')[0] || 'User';
+    }
+  }
+
+  function setupProfileDropdown() {
+    const profileBtn = document.getElementById('profile-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+    const dropdownLogoutBtn = document.getElementById('dropdown-logout-btn');
+    
+    if (!profileBtn || !profileDropdown) return;
+    
+    // Toggle dropdown
+    profileBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      profileDropdown.classList.toggle('show');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!profileDropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+        profileDropdown.classList.remove('show');
+      }
+    });
+    
+    // Handle logout
+    if (dropdownLogoutBtn) {
+      dropdownLogoutBtn.addEventListener('click', async function() {
+        try {
+          const { supabase } = await import('./src/supabase.js');
+          await supabase.auth.signOut();
+          profileDropdown.classList.remove('show');
+          showToast('Logged out successfully');
+        } catch (error) {
+          console.error('Error signing out:', error);
+          showToast('Error signing out', 'error');
+        }
+      });
+    }
+  }
 
   // Newsletter subscription functionality
   document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
