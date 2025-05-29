@@ -1,162 +1,182 @@
 
-// Simple profile management
-class ProfileManager {
-  constructor() {
-    this.supabase = null;
-    this.user = null;
-    this.init();
-  }
+import { supabase } from './src/supabase.js';
 
-  async init() {
-    try {
-      const { supabase } = await import('./src/supabase.js');
-      this.supabase = supabase;
-      await this.checkAuth();
-      this.setupForm();
-    } catch (error) {
-      console.error('Profile init failed:', error);
-    }
-  }
+let currentUser = null;
+let originalData = {};
 
-  async checkAuth() {
-    if (!this.supabase) return;
+// Initialize profile page
+document.addEventListener('DOMContentLoaded', async function() {
+  await checkAuth();
+  await loadProfile();
+  setupEventListeners();
+});
+
+// Check if user is authenticated
+async function checkAuth() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
     
-    try {
-      const { data: { session } } = await this.supabase.auth.getSession();
-      
-      if (!session) {
-        window.location.href = 'login.html';
-        return;
-      }
-      
-      this.user = session.user;
-      await this.loadProfile();
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    if (!session) {
       window.location.href = 'login.html';
-    }
-  }
-
-  async loadProfile() {
-    if (!this.user) return;
-    
-    try {
-      const { data: profile, error } = await this.supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', this.user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') {
-        throw error;
-      }
-
-      // Fill form with data
-      document.getElementById('email').value = this.user.email || '';
-      document.getElementById('full-name').value = profile?.full_name || '';
-      
-    } catch (error) {
-      console.error('Profile load failed:', error);
-      showToast('Failed to load profile', 'error');
-    }
-  }
-
-  setupForm() {
-    const form = document.getElementById('profile-form');
-    const changePasswordBtn = document.getElementById('change-password-btn');
-    const deleteAccountBtn = document.getElementById('delete-account-btn');
-
-    form.addEventListener('submit', (e) => this.handleSave(e));
-    changePasswordBtn.addEventListener('click', () => this.handleChangePassword());
-    deleteAccountBtn.addEventListener('click', () => this.handleDeleteAccount());
-  }
-
-  async handleSave(e) {
-    e.preventDefault();
-    
-    const fullName = document.getElementById('full-name').value;
-    const saveBtn = document.getElementById('save-btn');
-
-    if (!fullName.trim()) {
-      showToast('Please enter your full name', 'error');
       return;
     }
-
-    saveBtn.textContent = 'Saving...';
-    saveBtn.disabled = true;
-
-    try {
-      const { error } = await this.supabase
-        .from('profiles')
-        .upsert({
-          id: this.user.id,
-          email: this.user.email,
-          full_name: fullName.trim(),
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      showToast('Profile updated successfully!');
-      
-    } catch (error) {
-      console.error('Profile save failed:', error);
-      showToast('Failed to save profile', 'error');
-    } finally {
-      saveBtn.textContent = 'Save Changes';
-      saveBtn.disabled = false;
-    }
-  }
-
-  async handleChangePassword() {
-    const newPassword = prompt('Enter new password (min. 6 characters):');
     
-    if (!newPassword || newPassword.length < 6) {
-      showToast('Password must be at least 6 characters', 'error');
-      return;
-    }
-
-    try {
-      const { error } = await this.supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) throw error;
-
-      showToast('Password updated successfully!');
-      
-    } catch (error) {
-      console.error('Password change failed:', error);
-      showToast('Failed to change password', 'error');
-    }
-  }
-
-  async handleDeleteAccount() {
-    const confirm = window.confirm('Are you sure you want to delete your account? This cannot be undone.');
-    
-    if (!confirm) return;
-
-    try {
-      // Delete profile first
-      await this.supabase
-        .from('profiles')
-        .delete()
-        .eq('id', this.user.id);
-
-      showToast('Account deleted successfully');
-      
-      // Sign out and redirect
-      await this.supabase.auth.signOut();
-      window.location.href = 'index.html';
-      
-    } catch (error) {
-      console.error('Account deletion failed:', error);
-      showToast('Failed to delete account', 'error');
-    }
+    currentUser = session.user;
+  } catch (error) {
+    console.error('Error checking auth:', error);
+    window.location.href = 'login.html';
   }
 }
 
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-  new ProfileManager();
-});
+// Load user profile data
+async function loadProfile() {
+  if (!currentUser) return;
+  
+  try {
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', currentUser.id)
+      .single();
+    
+    if (error) {
+      console.error('Error loading profile:', error);
+      showToast('Error loading profile data', 'error');
+      return;
+    }
+    
+    // Populate form fields
+    document.getElementById('email').value = profile.email || '';
+    document.getElementById('full_name').value = profile.full_name || '';
+    
+    // Store original data for comparison
+    originalData = {
+      email: profile.email || '',
+      full_name: profile.full_name || ''
+    };
+    
+    // Update account info
+    document.getElementById('member-since').textContent = formatDate(profile.created_at);
+    document.getElementById('last-updated').textContent = formatDate(profile.updated_at);
+    
+  } catch (error) {
+    console.error('Error loading profile:', error);
+    showToast('Error loading profile data', 'error');
+  }
+}
+
+// Setup event listeners
+function setupEventListeners() {
+  const form = document.getElementById('profile-form');
+  const logoutBtn = document.getElementById('logout-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
+  
+  form.addEventListener('submit', handleSaveProfile);
+  logoutBtn.addEventListener('click', handleLogout);
+  cancelBtn.addEventListener('click', handleCancel);
+}
+
+// Handle profile save
+async function handleSaveProfile(e) {
+  e.preventDefault();
+  
+  const saveBtn = document.getElementById('save-btn');
+  const originalText = saveBtn.textContent;
+  
+  try {
+    saveBtn.textContent = 'Saving...';
+    saveBtn.disabled = true;
+    
+    const formData = new FormData(e.target);
+    const fullName = formData.get('full_name').trim();
+    
+    // Check if data has changed
+    if (fullName === originalData.full_name) {
+      showToast('No changes to save');
+      return;
+    }
+    
+    // Update profile in database
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        full_name: fullName,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', currentUser.id);
+    
+    if (error) {
+      throw error;
+    }
+    
+    // Update original data
+    originalData.full_name = fullName;
+    
+    showToast('Profile updated successfully!');
+    
+    // Reload profile to show updated timestamp
+    await loadProfile();
+    
+  } catch (error) {
+    console.error('Error saving profile:', error);
+    showToast('Error saving profile. Please try again.', 'error');
+  } finally {
+    saveBtn.textContent = originalText;
+    saveBtn.disabled = false;
+  }
+}
+
+// Handle cancel button
+function handleCancel() {
+  // Reset form to original values
+  document.getElementById('full_name').value = originalData.full_name;
+  showToast('Changes cancelled');
+}
+
+// Handle logout
+async function handleLogout() {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    
+    window.location.href = 'index.html';
+  } catch (error) {
+    console.error('Error signing out:', error);
+    showToast('Error signing out', 'error');
+  }
+}
+
+// Utility function to format dates
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+}
+
+// Toast notification function
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toast-message');
+  
+  if (!toast || !toastMessage) return;
+  
+  toastMessage.textContent = message;
+  toast.classList.add('show');
+  
+  if (type === 'error') {
+    toast.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+    toast.style.color = '#ef4444';
+  } else {
+    toast.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+    toast.style.color = '#f59e0b';
+  }
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}

@@ -1,32 +1,5 @@
-
-// Simple about page functionality
 document.addEventListener('DOMContentLoaded', function() {
-  // Check if user needs to login for protected content
-  checkAuthForPage();
-  
-  // Simple scroll animations
-  setupScrollAnimations();
-});
-
-async function checkAuthForPage() {
-  // Only require auth if user tries to access advanced features
-  const advancedButtons = document.querySelectorAll('[data-requires-auth]');
-  
-  advancedButtons.forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      
-      if (window.authManager && !window.authManager.user) {
-        window.authManager.showLoginPrompt();
-      } else {
-        // Proceed with the action
-        window.location.href = button.href;
-      }
-    });
-  });
-}
-
-function setupScrollAnimations() {
+  // Simple animations for sections
   const sections = document.querySelectorAll('section');
   
   const observer = new IntersectionObserver((entries) => {
@@ -44,4 +17,4 @@ function setupScrollAnimations() {
     section.style.transition = 'all 0.5s ease-out';
     observer.observe(section);
   });
-}
+});
