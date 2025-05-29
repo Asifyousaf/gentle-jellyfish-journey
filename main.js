@@ -1,20 +1,4 @@
-
 // Main JavaScript for shared functionality across pages
-
-// Check if user is logged in (simple check)
-window.isUserLoggedIn = function() {
-  const session = localStorage.getItem('supabase_session');
-  return session && session !== 'null';
-};
-
-// Redirect to login if not authenticated
-window.requireAuth = function() {
-  if (!window.isUserLoggedIn()) {
-    window.location.href = 'login.html';
-    return false;
-  }
-  return true;
-};
 
 // Toast notification function (global)
 window.showToast = function(message, type = 'success') {
@@ -105,53 +89,8 @@ window.debounce = function(func, wait) {
   };
 };
 
-// Update navigation based on login status
-function updateNavigation() {
-  const loginButton = document.querySelector('.nav-actions a[href="login.html"]');
-  const logoutButton = document.getElementById('logout-nav-btn');
-  
-  if (window.isUserLoggedIn()) {
-    if (loginButton) {
-      loginButton.textContent = 'Dashboard';
-      loginButton.href = 'dashboard.html';
-    }
-    if (logoutButton) {
-      logoutButton.style.display = 'inline-block';
-    }
-  } else {
-    if (loginButton) {
-      loginButton.textContent = 'Login';
-      loginButton.href = 'login.html';
-    }
-    if (logoutButton) {
-      logoutButton.style.display = 'none';
-    }
-  }
-}
-
 // Newsletter subscription functionality
 document.addEventListener('DOMContentLoaded', function() {
-  // Update navigation on page load
-  updateNavigation();
-  
-  // Add click handlers to navigation links that require auth
-  const protectedLinks = document.querySelectorAll('a[href="dashboard.html"], a[href="currency.html"], a[href="news.html"], a[href="trends.html"], a[href="profile.html"]');
-  
-  protectedLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      if (!window.isUserLoggedIn()) {
-        window.showToast('Please login to access this page', 'error');
-        setTimeout(() => {
-          window.location.href = 'login.html';
-        }, 1500);
-      } else {
-        window.location.href = this.getAttribute('href');
-      }
-    });
-  });
-
   const form = document.getElementById('newsletter-form');
   if (form) {
     form.addEventListener('submit', async function(e) {
@@ -197,4 +136,3 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
-

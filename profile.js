@@ -1,3 +1,4 @@
+
 import { supabase } from './src/supabase.js';
 
 let currentUser = null;
@@ -137,9 +138,6 @@ async function handleLogout() {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    
-    // Clear local session storage
-    localStorage.removeItem('supabase_session');
     
     window.location.href = 'index.html';
   } catch (error) {
