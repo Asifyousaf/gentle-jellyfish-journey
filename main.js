@@ -16,14 +16,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function initializeAuth() {
   try {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session);
-        currentSession = session;
-        currentUser = session?.user || null;
-        await updateAuthUI();
-      }
-    );
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
+      currentSession = session;
+      currentUser = session?.user || null;
+      await updateAuthUI();
+    });
 
     // Then check for existing session
     const { data: { session } } = await supabase.auth.getSession();
@@ -41,6 +39,7 @@ async function updateAuthUI() {
   const loginLink = document.getElementById('login-link');
   const profileContainer = document.getElementById('profile-container');
   const mobileProfileSection = document.getElementById('mobile-profile-section');
+  const mobileLoginSection = document.getElementById('mobile-login-section');
   
   console.log('Updating auth UI. User:', currentUser);
   
@@ -53,6 +52,11 @@ async function updateAuthUI() {
       loginLink.style.display = 'none';
     }
     
+    // Hide mobile login section
+    if (mobileLoginSection) {
+      mobileLoginSection.style.display = 'none';
+    }
+    
     // Show desktop profile
     if (profileContainer) {
       profileContainer.style.display = 'flex';
@@ -61,21 +65,10 @@ async function updateAuthUI() {
       const nameSpan = document.getElementById('profile-name');
       const emailDiv = document.getElementById('profile-email');
       
-      // Get user profile data
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name, email')
-          .eq('id', currentUser.id)
-          .single();
-          
-        if (nameSpan) nameSpan.textContent = profile?.full_name || currentUser.email.split('@')[0];
-        if (emailDiv) emailDiv.textContent = currentUser.email;
-      } catch (error) {
-        console.log('No profile found, using auth data');
-        if (nameSpan) nameSpan.textContent = currentUser.email.split('@')[0];
-        if (emailDiv) emailDiv.textContent = currentUser.email;
-      }
+      const displayName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+      
+      if (nameSpan) nameSpan.textContent = displayName;
+      if (emailDiv) emailDiv.textContent = currentUser.email;
     }
     
     // Show mobile profile section
@@ -85,7 +78,9 @@ async function updateAuthUI() {
       const mobileUserName = document.getElementById('mobile-user-name');
       const mobileUserEmail = document.getElementById('mobile-user-email');
       
-      if (mobileUserName) mobileUserName.textContent = currentUser.email.split('@')[0];
+      const displayName = currentUser.user_metadata?.full_name || currentUser.email.split('@')[0];
+      
+      if (mobileUserName) mobileUserName.textContent = displayName;
       if (mobileUserEmail) mobileUserEmail.textContent = currentUser.email;
     }
     
@@ -95,7 +90,12 @@ async function updateAuthUI() {
     
     // Show login button
     if (loginLink) {
-      loginLink.style.display = 'flex';
+      loginLink.style.display = 'inline-flex';
+    }
+    
+    // Show mobile login section
+    if (mobileLoginSection) {
+      mobileLoginSection.style.display = 'block';
     }
     
     // Hide profile containers
@@ -147,13 +147,13 @@ async function handleLogout() {
     // Clear local data
     currentUser = null;
     currentSession = null;
-    localStorage.removeItem('supabase.auth.token');
     
     // Update UI
     await updateAuthUI();
     
-    // Redirect to home page
-    window.location.href = 'index.html';
+    // Show success message
+    showToast('Successfully logged out');
+    
   } catch (error) {
     console.error('Error signing out:', error);
     showToast('Error signing out', 'error');
